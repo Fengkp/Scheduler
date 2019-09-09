@@ -6,7 +6,6 @@ public class User {
     private static Connection conn = null;
 
     public boolean authenticate(String username, String password) {
-        final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
         final String DB_URL = "jdbc:mysql://52.206.157.109/U06mzl";
 
         //  Database credentials
@@ -21,13 +20,13 @@ public class User {
             ResultSet results = stmt.executeQuery();
 
             while (results.next())
-                System.out.println(results.getString(2));
+                if(results.getString(2).equals(username)
+                && results.getString(3).equals(password))
+                return true;
 
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-
-
         return false;
     }
 }
