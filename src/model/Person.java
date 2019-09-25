@@ -1,12 +1,8 @@
 package model;
 
 public abstract class Person {
-    protected String name;
-    protected int id;
-
-    public void setId(String category) {
-        // Generate id based on category then going to the last entry and then adding 1
-    }
+    private String name;
+    private int id;
 
     public String getName() {
         return name;
@@ -18,5 +14,9 @@ public abstract class Person {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

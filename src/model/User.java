@@ -1,9 +1,5 @@
 package model;
 
-import utils.DatabaseConnection;
-
-import java.sql.*;
-
 public class User extends Person {
 
     private String password;
@@ -11,8 +7,7 @@ public class User extends Person {
     public User(){}
 
     public User(String userName, String password) {
-        super.setId("user");
-        super.name = userName;
+        super.setName(userName);
         this.password = password;
     }
 

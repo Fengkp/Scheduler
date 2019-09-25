@@ -56,7 +56,7 @@ public class GetData {
         Month thisMonth = LocalDateTime.now().getMonth();
 
         if (appointmentsList.isEmpty()) {
-            ResultSet results = getDBResults("SELECT * FROM appointment WHERE start >= '" + Timestamp.valueOf(LocalDateTime.now()).toString() + "'");
+            ResultSet results = getDBResults("SELECT * FROM appointment WHERE start >= '" + LocalDateTime.now() + "'");
 
             while (results != null && results.next()) {
                 Appointment newAppointment = new Appointment(results.getString("appointmentId"), results.getString("customerId"),
@@ -86,7 +86,7 @@ public class GetData {
         LocalDateTime start = LocalDateTime.now(ZoneId.of(ZoneId.systemDefault().toString())).with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
         LocalDateTime end = start.plusDays(5);
 
-        ResultSet results = getDBResults("SELECT * FROM appointment WHERE start >= '" + start.toString() + "' AND start <= '" + end.toString() + "'");
+        ResultSet results = getDBResults("SELECT * FROM appointment WHERE start >= '" + start + "' AND start <= '" + end + "'");
 
         while (results != null && results.next()) {
             Appointment newAppointment = new Appointment(results.getString("appointmentId"), results.getString("customerId"),
@@ -95,7 +95,7 @@ public class GetData {
         }
     }
 
-    private static ResultSet getDBResults(String query) {
+    public static ResultSet getDBResults(String query) {
         try {
             Statement statement = DatabaseConnection.getInstance().getConnection().createStatement();
             ResultSet results = statement.executeQuery(query);
