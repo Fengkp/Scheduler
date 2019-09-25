@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.MainController">
    <children>
-      <BorderPane layoutX="63.0" layoutY="81.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <BorderPane layoutX="63.0" layoutY="81.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <center>
+            <TableView fx:id="appointmentTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+              <columns>
+                <TableColumn fx:id="appointmentTypeColumn" prefWidth="75.0" text="Type" />
+                <TableColumn fx:id="customerNameColumn" prefWidth="75.0" text="Name" />
+                  <TableColumn fx:id="startTimeColumn" prefWidth="75.0" text="Start" />
+                  <TableColumn fx:id="endTimeColumn" prefWidth="75.0" text="End" />
+              </columns>
+            </TableView>
+         </center>
+         <left>
+            <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Button fx:id="newAppointmentBtn" mnemonicParsing="false" onAction="#newAppointmentBtn" text="New Appointment" />
+                  <Button mnemonicParsing="false" text="Reports" />
+               </children>
+            </VBox>
+         </left>
+         <top>
+            <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Button fx:id="allBtn" mnemonicParsing="false" onAction="#allBtn" text="All" />
+                  <Button fx:id="weekBtn" mnemonicParsing="false" onAction="#weekBtn" text="Week" />
+                  <Button fx:id="monthBtn" mnemonicParsing="false" onAction="#monthBtn" text="Month" />
+               </children>
+            </HBox>
+         </top></BorderPane>
    </children>
 </AnchorPane>

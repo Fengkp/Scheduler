@@ -1,16 +1,26 @@
 package view;
 
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import model.Appointment;
 import utils.GetData;
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.util.ResourceBundle;
 
-public class MainController implements Initializable {
+import java.io.IOException;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+
+public class MainController {
     @FXML
     private TableView<Appointment> appointmentTable;
     @FXML
@@ -21,23 +31,58 @@ public class MainController implements Initializable {
     private TableColumn<Appointment, LocalDateTime> startTimeColumn;
     @FXML
     private TableColumn<Appointment, LocalDateTime> endTimeColumn;
+    @FXML
+    private Button allBtn;
+    @FXML
+    private Button weekBtn;
+    @FXML
+    private Button monthBtn;
+    @FXML
+    private Button newAppointmentBtn;
 
     // Fill table
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // ** Doesn't work
-        GetData getAlerts = new GetData();
-        for (String appointment : getAlerts.getAppointmentsSoon()) {
-            if (getAlerts.getAppointmentsSoon().isEmpty()) {
+    @FXML
+    public void initialize() throws SQLException {
+        for (String appointment : GetData.getAppointmentsSoon()) {
+            if (GetData.getAppointmentsSoon().isEmpty()) {
                 System.out.println("No alerts.");
                 break;
             }
             System.out.println(appointment);
         }
-        // **
 
-
+        GetData.setAppointments();
+        setTable(GetData.getAppointments());
     }
 
+    private void setTable(ObservableList<Appointment> appointments) {
+        appointmentTypeColumn.setCellValueFactory(cellData -> cellData.getValue().appointmentTypeProperty());
+        customerNameColumn.setCellValueFactory(cellData -> cellData.getValue().customerNameProperty());
+        startTimeColumn.setCellValueFactory(cellData -> cellData.getValue().startTimeProperty());
+        endTimeColumn.setCellValueFactory(cellData -> cellData.getValue().endTimeProperty());
+        appointmentTable.setItems(appointments);
+    }
+
+    public void allBtn(ActionEvent event) {
+        setTable(GetData.getAppointments());
+    }
+
+    public void weekBtn(ActionEvent event) {
+        setTable(GetData.getAppointmentsThisWeek());
+    }
+
+    public void monthBtn(ActionEvent event) {
+        setTable(GetData.getAppointmentsThisMonth());
+    }
+
+    public void newAppointmentBtn(ActionEvent event) throws IOException {
+        AnchorPane newAppointmentPane = FXMLLoader.load(getClass().getResource("NewAppointmentView.fxml"));
+        Stage newAppointmentStage = new Stage();
+        newAppointmentStage.initModality(Modality.WINDOW_MODAL);
+        newAppointmentStage.initOwner(((Node)event.getSource()).getScene().getWindow());
+        Scene newAppointmentScene = new Scene(newAppointmentPane);
+        newAppointmentStage.setScene(newAppointmentScene);
+        newAppointmentStage.showAndWait();
+    }
 
 }

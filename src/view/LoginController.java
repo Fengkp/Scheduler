@@ -13,6 +13,8 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.scene.Node;
@@ -44,15 +46,11 @@ public class LoginController implements Initializable {
         loginBtn.setText(languageRB.getString("login"));
     }
 
-    public void loginBtn(ActionEvent event) throws IOException {
+    public void loginBtn(ActionEvent event) throws IOException, SQLException {
         userName = userNameText.getText();
         password = passwordText.getText();
 
-        GetData authenticator = new GetData();
-        for (String appointment : authenticator.getAppointmentsSoon())
-            System.out.println(appointment);
-
-        if (authenticator.authenticateUser(userName, password)) {
+        if (GetData.authenticateUser(userName, password)) {
             System.out.println("model.User Authenticated.");
 
             Parent root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
