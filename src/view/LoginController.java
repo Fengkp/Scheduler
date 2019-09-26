@@ -1,5 +1,4 @@
 package view;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,11 +13,11 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.scene.Node;
-import utils.GetData;
+import utils.AppointmentDatabase;
+import utils.UserDatabase;
 
 public class LoginController implements Initializable {
 
@@ -50,8 +49,10 @@ public class LoginController implements Initializable {
         userName = userNameText.getText();
         password = passwordText.getText();
 
-        if (GetData.authenticateUser(userName, password)) {
+        if (UserDatabase.authenticateUser(userName, password)) {
             System.out.println("model.User Authenticated.");
+            AppointmentDatabase.setAppointments();
+            System.out.println(AppointmentDatabase.getAppointmentsStartingSoon());
 
             Parent root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
             Scene scene = new Scene(root);

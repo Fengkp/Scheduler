@@ -56,6 +56,7 @@
             <ComboBox fx:id="startMinutesCombo" prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             <ComboBox fx:id="endHourCombo" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <ComboBox fx:id="endMinutesCombo" prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <Button fx:id="autoFillBtn" mnemonicParsing="false" text="Autofill" GridPane.columnIndex="2" GridPane.rowIndex="4" />
          </children>
       </GridPane>
    </children>

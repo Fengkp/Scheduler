@@ -5,7 +5,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
@@ -14,45 +13,31 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Appointment;
-import utils.GetData;
-
 import java.io.IOException;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
+import static utils.AppointmentDatabase.*;
 
 public class MainController {
     @FXML
     private TableView<Appointment> appointmentTable;
     @FXML
-    private TableColumn<Appointment, String> appointmentTypeColumn;
+    private TableColumn<Appointment, String> appointmentTypeColumn, customerNameColumn;
     @FXML
-    private TableColumn<Appointment, String> customerNameColumn;
+    private TableColumn<Appointment, LocalDateTime> startTimeColumn, endTimeColumn;
     @FXML
-    private TableColumn<Appointment, LocalDateTime> startTimeColumn;
-    @FXML
-    private TableColumn<Appointment, LocalDateTime> endTimeColumn;
-    @FXML
-    private Button allBtn;
-    @FXML
-    private Button weekBtn;
-    @FXML
-    private Button monthBtn;
-    @FXML
-    private Button newAppointmentBtn;
+    private Button allBtn, weekBtn, monthBtn, newAppointmentBtn;
 
     // Fill table
     @FXML
-    public void initialize() throws SQLException {
-        for (String appointment : GetData.getAppointmentsSoon()) {
-            if (GetData.getAppointmentsSoon().isEmpty()) {
+    public void initialize() {
+        for (Appointment appointment : getAppointmentsStartingSoon()) {
+            if (getAppointmentsStartingSoon().isEmpty()) {
                 System.out.println("No alerts.");
                 break;
             }
             System.out.println(appointment);
         }
-
-        GetData.setAppointments();
-        setTable(GetData.getAppointments());
+        setTable(getAppointments());
     }
 
     private void setTable(ObservableList<Appointment> appointments) {
@@ -63,16 +48,16 @@ public class MainController {
         appointmentTable.setItems(appointments);
     }
 
-    public void allBtn(ActionEvent event) {
-        setTable(GetData.getAppointments());
+    public void allBtn() {
+        setTable(getAppointments());
     }
 
-    public void weekBtn(ActionEvent event) {
-        setTable(GetData.getAppointmentsThisWeek());
+    public void weekBtn() {
+        setTable(getAppointmentsThisWeek());
     }
 
-    public void monthBtn(ActionEvent event) {
-        setTable(GetData.getAppointmentsThisMonth());
+    public void monthBtn() {
+        setTable(getAppointmentsThisMonth());
     }
 
     public void newAppointmentBtn(ActionEvent event) throws IOException {

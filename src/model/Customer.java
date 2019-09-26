@@ -7,8 +7,7 @@ public class Customer extends Person {
     private String postalCode;
     private String phone;
 
-    public Customer(int id, String name, String address, String city, String country, String postalCode, String phone) {
-        super.setId(id);
+    public Customer(String name, String address, String city, String country, String postalCode, String phone) {
         super.setName(name);
         this.address = address;
         this.city = city;

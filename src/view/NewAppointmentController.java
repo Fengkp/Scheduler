@@ -1,59 +1,33 @@
 package view;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import model.Address;
 import model.Appointment;
 import model.Customer;
-import utils.DatabaseConnection;
-import utils.GetData;
 
-import java.io.IOException;
+import javax.xml.soap.Text;
 import java.sql.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import static utils.AppointmentDatabase.*;
+import static utils.CustomerDatabase.*;
 
 public class NewAppointmentController {
     @FXML
-    private TextField appointmentTypeTxt;
+    private TextField appointmentTypeTxt, nameTxt, addressTxt, cityTxt, countryTxt,
+            postalCodeTxt, phoneNumberTxt;
     @FXML
-    private TextField nameTxt;
-    @FXML
-    private TextField addressTxt;
-    @FXML
-    private TextField cityTxt;
-    @FXML
-    private TextField countryTxt;
-    @FXML
-    private TextField postalCodeTxt;
-    @FXML
-    private TextField phoneNumberTxt;
-    @FXML
-    private Button confirmBtn;
-    @FXML
-    private Button cancelBtn;
-    @FXML
-    private Button autoFillBtn;
+    private Button confirmBtn, cancelBtn;
     @FXML
     private DatePicker appointmentDatePicker;
     @FXML
-    private ComboBox<String> startHourCombo;
-    @FXML
-    private ComboBox<String> startMinutesCombo;
-    @FXML
-    private ComboBox<String> endHourCombo;
-    @FXML
-    private ComboBox<String> endMinutesCombo;
+    private ComboBox<String> startHourCombo, startMinutesCombo, endHourCombo, endMinutesCombo;
 
     ObservableList<String> hours = FXCollections.observableArrayList();
     ObservableList<String> minutes = FXCollections.observableArrayList();
@@ -70,20 +44,24 @@ public class NewAppointmentController {
     }
 
     public void confirmBtn() throws SQLException {
-        LocalDate date = appointmentDatePicker.getValue();
-        String startHour = startHourCombo.getValue();
-        String startMinutes = startMinutesCombo.getValue();
-        String endHour = endHourCombo.getValue();
-        String endMinutes = endMinutesCombo.getValue();
+        try {
+            LocalDate date = appointmentDatePicker.getValue();
+            String startHour = startHourCombo.getValue();
+            String startMinutes = startMinutesCombo.getValue();
+            String endHour = endHourCombo.getValue();
+            String endMinutes = endMinutesCombo.getValue();
 
-        LocalDateTime startLDT = LocalDateTime.of(date.getYear(), date.getMonthValue(),
-                date.getDayOfMonth(), Integer.parseInt(startHour), Integer.parseInt(startMinutes));
-        LocalDateTime endLDT = LocalDateTime.of(date.getYear(), date.getMonthValue(),
-                date.getDayOfMonth(), Integer.parseInt(endHour), Integer.parseInt(endMinutes));
+            LocalDateTime startLDT = LocalDateTime.of(date.getYear(), date.getMonthValue(),
+                    date.getDayOfMonth(), Integer.parseInt(startHour), Integer.parseInt(startMinutes));
+            LocalDateTime endLDT = LocalDateTime.of(date.getYear(), date.getMonthValue(),
+                    date.getDayOfMonth(), Integer.parseInt(endHour), Integer.parseInt(endMinutes));
 
-        if (isValidAppointment(startLDT, endLDT));
+            if (isValidAppointment(startLDT, endLDT)) ;
             // Add to DB, refresh arrays, display table again, close window
 //        newAppointment.setStartTime(startTimeTxt);
+        } catch (NullPointerException | NumberFormatException ex) {
+            System.out.println("EMPTY FIELDS");
+        }
     }
 
     public void cancelBtn() {
@@ -92,7 +70,13 @@ public class NewAppointmentController {
     }
 
     public boolean isValidAppointment(LocalDateTime start, LocalDateTime end) throws SQLException {
-        // Time
+        if (appointmentTypeTxt.getText().trim().isEmpty() || nameTxt.getText().trim().isEmpty()
+                || addressTxt.getText().trim().isEmpty()|| cityTxt.getText().trim().isEmpty()
+                || countryTxt.getText().trim().isEmpty() || postalCodeTxt.getText().trim().isEmpty()
+                ||  phoneNumberTxt.getText().trim().isEmpty()) {
+            System.out.println("EMPTY FIELDS");
+            return false;
+        }
         if (!isValidDate(start, end)) {
             System.out.println("This appointment does not contain a valid date or time.");
             return false;
@@ -101,46 +85,21 @@ public class NewAppointmentController {
             System.out.println("This appointment overlaps an already existing appointment.");
             return false;
         }
-        // Customer details
-        // CHECK FOR INVALID FIELDS BEFORE MAKING NEW CUSTOMER
-        test();
-        Customer newCustomer = new Customer (customerExists(nameTxt.getText()), nameTxt.getText(), addressTxt.getText(),
-                cityTxt.getText(), countryTxt.getText(), postalCodeTxt.getText(), phoneNumberTxt.getText());
-        if (newCustomer.getId() != -1)
-            System.out.println(compareAddress(newCustomer));
+        Customer customer = new Customer(nameTxt.getText(), addressTxt.getText(), cityTxt.getText(),
+                countryTxt.getText(), postalCodeTxt.getText(), phoneNumberTxt.getText());
+        int customerId = customerExists(customer.getName());
+        if (customerId != -1)
+            customer = getCustomer(customerId);
+        // else
+        // addNewCustomer (to DB)
+        Appointment appointment = new Appointment(appointmentTypeTxt.getText(), start, end);
+        appointment.setCustomerId(customer.getId());
+        appointment.setCustomerName(customer.getName());
 
         return true;
     }
 
-    public boolean compareAddress(Customer customer) throws SQLException {
-        ResultSet results = GetData.getDBResults("SELECT address, city, country, postalCode, phone " +
-                "FROM address, city, country, address, address " +
-                "WHERE address = '" + customer.getAddress() + "' AND city = '" + customer.getCity() +
-                "' AND country = '" + customer.getCountry() + "' AND postalCode = '" + customer.getPostalCode() +
-                "' AND phone = '" + customer.getPhone() + "'");
-        if (results.next() == false)
-            return false;
-        return true;
-    }
-
-    public void test() {
-        nameTxt.setText("John Doe");
-        addressTxt.setText("123 Main");
-        cityTxt.setText("New York");
-        countryTxt.setText("US");
-        postalCodeTxt.setText("11111");
-        phoneNumberTxt.setText("555-1212");
-    }
-
-    public int customerExists(String customerName) throws SQLException {
-        ResultSet results = GetData.getDBResults("SELECT * FROM customer WHERE customerName ='" + customerName + "'");
-
-        if (results.next() == false)
-            return -1;
-        return results.getInt("customerId");
-    }
-
-    private boolean isValidDate(LocalDateTime start, LocalDateTime end) {
+    public static boolean isValidDate(LocalDateTime start, LocalDateTime end) {
         int openHour = 9;
         int closeHour = 17;
         LocalDateTime now = LocalDateTime.now();
@@ -159,14 +118,12 @@ public class NewAppointmentController {
         return true;
     }
 
-    private boolean isAppointmentTimeOverlapping(LocalDateTime start, LocalDateTime end) throws SQLException {
-        ResultSet results = GetData.getDBResults("SELECT * FROM appointment WHERE start <= '" + end + "' AND end >='" + end + "'");
-        if (!results.next() == false)
-            return true;
-        results = GetData.getDBResults("SELECT * FROM appointment WHERE start <= '" + start + "' AND end >='" + start + "'");
-        if (!results.next() == false)
-            return true;
-        return false;
+    public void test() {
+        nameTxt.setText("Joe Doe");
+        addressTxt.setText("123 Main");
+        cityTxt.setText("New York");
+        countryTxt.setText("US");
+        postalCodeTxt.setText("11111");
+        phoneNumberTxt.setText("555-1212");
     }
-
 }

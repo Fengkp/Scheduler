@@ -4,15 +4,12 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import utils.GetData;
-
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class Appointment {
 
-    private String id;
-    private String customerId;
+    private int id;
+    private int customerId;
     private StringProperty appointmentType;
     private StringProperty customerName;
     private ObjectProperty<LocalDateTime> startTime;
@@ -20,29 +17,26 @@ public class Appointment {
 
     public Appointment() {}
 
-    public Appointment(String id, String customerId, String appointmentType,
-                       LocalDateTime startTime, LocalDateTime endTime) throws SQLException {
-        this.id = id;
-        this.customerId = customerId;
-        this.customerName = new SimpleStringProperty(GetData.getCustomerName(customerId));
+    public Appointment(String appointmentType,
+                       LocalDateTime startTime, LocalDateTime endTime) {
         this.appointmentType = new SimpleStringProperty(appointmentType);
         this.startTime = new SimpleObjectProperty(startTime);
         this.endTime = new SimpleObjectProperty(endTime);
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getCustomerId() {
+    public int getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(String customerId) {
+    public void setCustomerId(int customerId) {
         this.customerId = customerId;
     }
 
@@ -51,7 +45,7 @@ public class Appointment {
     }
 
     public void setCustomerName(String customerName) {
-        this.customerName.set(customerName);
+        this.customerName = new SimpleStringProperty(customerName);
     }
 
     public StringProperty customerNameProperty() {
