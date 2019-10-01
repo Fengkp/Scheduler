@@ -9,8 +9,9 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import model.Appointment;
 import model.Customer;
+import utils.AppointmentDatabase;
+import utils.CustomerDatabase;
 
-import javax.xml.soap.Text;
 import java.sql.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -20,14 +21,15 @@ import static utils.CustomerDatabase.*;
 
 public class NewAppointmentController {
     @FXML
-    private TextField appointmentTypeTxt, nameTxt, addressTxt, cityTxt, countryTxt,
-            postalCodeTxt, phoneNumberTxt;
+    private TextField appointmentTypeTxt;
     @FXML
     private Button confirmBtn, cancelBtn;
     @FXML
     private DatePicker appointmentDatePicker;
     @FXML
     private ComboBox<String> startHourCombo, startMinutesCombo, endHourCombo, endMinutesCombo;
+    @FXML
+    private ComboBox<Customer> customerCombo;
 
     ObservableList<String> hours = FXCollections.observableArrayList();
     ObservableList<String> minutes = FXCollections.observableArrayList();
@@ -41,6 +43,9 @@ public class NewAppointmentController {
         startMinutesCombo.setItems(minutes);
         endHourCombo.setItems(hours);
         endMinutesCombo.setItems(minutes);
+        customerCombo.setItems(CustomerDatabase.getInstance().getCustomers());
+
+        test();
     }
 
     public void confirmBtn() throws SQLException {
@@ -56,7 +61,13 @@ public class NewAppointmentController {
             LocalDateTime endLDT = LocalDateTime.of(date.getYear(), date.getMonthValue(),
                     date.getDayOfMonth(), Integer.parseInt(endHour), Integer.parseInt(endMinutes));
 
-            if (isValidAppointment(startLDT, endLDT)) ;
+            if (isValidAppointment(startLDT, endLDT)) {
+                Appointment appointment = new Appointment(appointmentTypeTxt.getText(), startLDT, endLDT);
+                appointment.setCustomerId(customerCombo.getValue().getId());
+                appointment.setCustomerName(customerCombo.getValue().getName());
+
+                AppointmentDatabase.getInstance().addAppointment(appointment);
+            }
             // Add to DB, refresh arrays, display table again, close window
 //        newAppointment.setStartTime(startTimeTxt);
         } catch (NullPointerException | NumberFormatException ex) {
@@ -70,10 +81,7 @@ public class NewAppointmentController {
     }
 
     public boolean isValidAppointment(LocalDateTime start, LocalDateTime end) throws SQLException {
-        if (appointmentTypeTxt.getText().trim().isEmpty() || nameTxt.getText().trim().isEmpty()
-                || addressTxt.getText().trim().isEmpty()|| cityTxt.getText().trim().isEmpty()
-                || countryTxt.getText().trim().isEmpty() || postalCodeTxt.getText().trim().isEmpty()
-                ||  phoneNumberTxt.getText().trim().isEmpty()) {
+        if (appointmentTypeTxt.getText().trim().isEmpty() || customerCombo.getValue() == null) {
             System.out.println("EMPTY FIELDS");
             return false;
         }
@@ -81,20 +89,10 @@ public class NewAppointmentController {
             System.out.println("This appointment does not contain a valid date or time.");
             return false;
         }
-        if (isAppointmentTimeOverlapping(start, end)) {
+        if (AppointmentDatabase.getInstance().isAppointmentTimeOverlapping(start, end)) {
             System.out.println("This appointment overlaps an already existing appointment.");
             return false;
         }
-        Customer customer = new Customer(nameTxt.getText(), addressTxt.getText(), cityTxt.getText(),
-                countryTxt.getText(), postalCodeTxt.getText(), phoneNumberTxt.getText());
-        int customerId = customerExists(customer.getName());
-        if (customerId != -1)
-            customer = getCustomer(customerId);
-        // else
-        // addNewCustomer (to DB)
-        Appointment appointment = new Appointment(appointmentTypeTxt.getText(), start, end);
-        appointment.setCustomerId(customer.getId());
-        appointment.setCustomerName(customer.getName());
 
         return true;
     }
@@ -118,12 +116,12 @@ public class NewAppointmentController {
         return true;
     }
 
-    public void test() {
-        nameTxt.setText("Joe Doe");
-        addressTxt.setText("123 Main");
-        cityTxt.setText("New York");
-        countryTxt.setText("US");
-        postalCodeTxt.setText("11111");
-        phoneNumberTxt.setText("555-1212");
+    private void test() {
+        appointmentDatePicker.setValue(LocalDate.of(2019, 10, 1));
+        startHourCombo.setValue("15");
+        startMinutesCombo.setValue("15");
+        endHourCombo.setValue("16");
+        endMinutesCombo.setValue("15");
+        appointmentTypeTxt.setText("Scrum");
     }
 }

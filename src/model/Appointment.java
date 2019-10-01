@@ -10,6 +10,7 @@ public class Appointment {
 
     private int id;
     private int customerId;
+    private int userId;
     private StringProperty appointmentType;
     private StringProperty customerName;
     private ObjectProperty<LocalDateTime> startTime;
@@ -38,6 +39,14 @@ public class Appointment {
 
     public void setCustomerId(int customerId) {
         this.customerId = customerId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int id) {
+        userId = id;
     }
 
     public String getCustomerName() {

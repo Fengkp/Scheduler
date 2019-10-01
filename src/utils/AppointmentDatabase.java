@@ -4,37 +4,59 @@ import javafx.collections.ObservableList;
 import model.Appointment;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.*;
 import java.time.temporal.TemporalAdjusters;
-import static utils.CustomerDatabase.getCustomer;
-import static utils.GetData.*;
 
 public class AppointmentDatabase {
-    private static ObservableList<Appointment> appointments = FXCollections.observableArrayList();
-    private static ObservableList<Appointment> appointmentsThisMonth = FXCollections.observableArrayList();
-    private static ObservableList<Appointment> appointmentsThisWeek = FXCollections.observableArrayList();
-    private static ObservableList<Appointment> appointmentsStartingSoon = FXCollections.observableArrayList();
+    private static AppointmentDatabase instance;
+    private ObservableList<Appointment> appointments = FXCollections.observableArrayList();
+    private ObservableList<Appointment> appointmentsThisMonth = FXCollections.observableArrayList();
+    private ObservableList<Appointment> appointmentsThisWeek = FXCollections.observableArrayList();
+    private ObservableList<Appointment> appointmentsStartingSoon = FXCollections.observableArrayList();
 
-    public static Appointment createAppointment(ResultSet results) throws SQLException{
+    private AppointmentDatabase() {}
+
+    public static AppointmentDatabase getInstance() {
+        if (instance == null)
+            instance = new AppointmentDatabase();
+        return instance;
+    }
+
+    public void addAppointment(Appointment appointment) throws SQLException {
+        String nA = "N/A";
+        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+
+        Statement statement = DatabaseConnection.getInstance().getConnection().createStatement();
+        statement.executeUpdate("INSERT INTO appointment (userId, customerId, title, description, location, contact, url, createDate, " +
+                "createdBy, lastUpdateBy, type, start, end) VALUES ('"
+                + UserDatabase.getInstance().getUser().getId() + "', '" + appointment.getCustomerId()
+                + "', '" + nA + "', '" + nA + "', '" + nA + "', '" + nA  + "', '" + nA + "', '" + now + "', '"
+                + UserDatabase.getInstance().getUser().getName() + "', '" + UserDatabase.getInstance().getUser().getName()
+                + "', '" + appointment.getAppointmentType() + "', '" + appointment.getStartTime() + "', '" + appointment.getEndTime() + "')");
+    }
+
+    private Appointment createAppointment(ResultSet results) throws SQLException{
         Appointment appointment = new Appointment(results.getString("type"),
                 results.getTimestamp("start").toLocalDateTime(), results.getTimestamp("end").toLocalDateTime());
         appointment.setId(results.getInt("appointmentId"));
         appointment.setId(results.getInt("customerId"));
-        appointment.setCustomerName(getCustomer(results.getInt("customerId")).getName());
+        appointment.setCustomerName(CustomerDatabase.getInstance().getCustomer(results.getInt("customerId")).getName());
 
         return appointment;
     }
 
-    public static ObservableList<Appointment> getAppointments() {
+    public ObservableList<Appointment> getAppointments() {
         return appointments;
     }
 
     // Return ObservableList to display on calendar table
-    public static void setAppointments() throws SQLException {
+    public void setAppointments() throws SQLException {
         Month thisMonth = LocalDateTime.now().getMonth();
 
         if (appointments.isEmpty()) {
-            ResultSet results = getDBResults("SELECT * FROM appointment WHERE start >= '" + LocalDateTime.now() + "'");
+            ResultSet results = GetData.getInstance().getDBResults("SELECT * FROM appointment WHERE start >= '" + LocalDateTime.now() + "'");
 
             while (results != null && results.next()) {
                 Appointment newAppointment = createAppointment(results);
@@ -48,48 +70,48 @@ public class AppointmentDatabase {
         }
     }
 
-    public static ObservableList<Appointment> getAppointmentsStartingSoon() {
+    public ObservableList<Appointment> getAppointmentsStartingSoon() {
         return appointmentsStartingSoon;
     }
 
-    public static void setAppointmentsStartingSoon() throws SQLException {
+    public void setAppointmentsStartingSoon() throws SQLException {
         int timeUntil = 15;
-        LocalDateTime now = convertToUTC(LocalDateTime.now());
+        LocalDateTime now = GetData.getInstance().convertToUTC(LocalDateTime.now());
         LocalDateTime timeFromNow = now.plusMinutes(timeUntil);
-        ResultSet results = getDBResults("SELECT * FROM appointment WHERE start >= '" + now +
+        ResultSet results = GetData.getInstance().getDBResults("SELECT * FROM appointment WHERE start >= '" + now +
                 "' AND start <= '" + timeFromNow + "'");
 
         while (results.next()) {
             Appointment appointment = new Appointment(results.getString("type"),
-                    convertToLocal(results.getTimestamp("start").toLocalDateTime()),
-                    convertToLocal(results.getTimestamp("end").toLocalDateTime()));
+                    GetData.getInstance().convertToLocal(results.getTimestamp("start").toLocalDateTime()),
+                    GetData.getInstance().convertToLocal(results.getTimestamp("end").toLocalDateTime()));
             appointmentsStartingSoon.add(appointment);
         }
     }
 
-    public static ObservableList<Appointment> getAppointmentsThisWeek() {
+    public ObservableList<Appointment> getAppointmentsThisWeek() {
         return appointmentsThisWeek;
     }
 
-    private static void setAppointmentsThisWeek() throws SQLException{
+    private void setAppointmentsThisWeek() throws SQLException{
         LocalDateTime start = LocalDateTime.now(ZoneId.of(ZoneId.systemDefault().toString())).with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
         LocalDateTime end = start.plusDays(5);
 
-        ResultSet results = getDBResults("SELECT * FROM appointment WHERE start >= '" + start + "' AND start <= '" + end + "'");
+        ResultSet results = GetData.getInstance().getDBResults("SELECT * FROM appointment WHERE start >= '" + start + "' AND start <= '" + end + "'");
 
         while (results != null && results.next())
             appointmentsThisWeek.add(createAppointment(results));
     }
 
-    public static ObservableList<Appointment> getAppointmentsThisMonth() {
+    public ObservableList<Appointment> getAppointmentsThisMonth() {
         return appointmentsThisMonth;
     }
 
-    public static boolean isAppointmentTimeOverlapping(LocalDateTime start, LocalDateTime end) throws SQLException {
-        ResultSet results = GetData.getDBResults("SELECT * FROM appointment WHERE start <= '" + end + "' AND end >='" + end + "'");
+    public boolean isAppointmentTimeOverlapping(LocalDateTime start, LocalDateTime end) throws SQLException {
+        ResultSet results = GetData.getInstance().getDBResults("SELECT * FROM appointment WHERE start <= '" + end + "' AND end >='" + end + "'");
         if (!results.next() == false)
             return true;
-        results = GetData.getDBResults("SELECT * FROM appointment WHERE start <= '" + start + "' AND end >='" + start + "'");
+        results = GetData.getInstance().getDBResults("SELECT * FROM appointment WHERE start <= '" + start + "' AND end >='" + start + "'");
         if (!results.next() == false)
             return true;
         return false;

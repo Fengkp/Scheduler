@@ -13,14 +13,15 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.scene.Node;
 import utils.AppointmentDatabase;
+import utils.CustomerDatabase;
 import utils.UserDatabase;
 
 public class LoginController implements Initializable {
-
     @FXML
     private TextField userNameText;
     @FXML
@@ -31,7 +32,6 @@ public class LoginController implements Initializable {
     private Label passwordLbl;
     @FXML
     private Button loginBtn;
-
     private String userName;
     private String password;
     private ResourceBundle languageRB;
@@ -49,10 +49,12 @@ public class LoginController implements Initializable {
         userName = userNameText.getText();
         password = passwordText.getText();
 
-        if (UserDatabase.authenticateUser(userName, password)) {
+        if (UserDatabase.getInstance().authenticateUser(userName, password)) {
             System.out.println("model.User Authenticated.");
-            AppointmentDatabase.setAppointments();
-            System.out.println(AppointmentDatabase.getAppointmentsStartingSoon());
+            CustomerDatabase.getInstance().setCustomers();
+            AppointmentDatabase.getInstance().setAppointments();
+            System.out.println(AppointmentDatabase.getInstance().getAppointmentsStartingSoon());
+            CustomerDatabase.getInstance().setCities();
 
             Parent root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
             Scene scene = new Scene(root);

@@ -13,6 +13,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Appointment;
+import utils.AppointmentDatabase;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import static utils.AppointmentDatabase.*;
@@ -25,19 +27,18 @@ public class MainController {
     @FXML
     private TableColumn<Appointment, LocalDateTime> startTimeColumn, endTimeColumn;
     @FXML
-    private Button allBtn, weekBtn, monthBtn, newAppointmentBtn;
+    private Button allBtn, weekBtn, monthBtn, newAppointmentBtn, newCustomerBtn;
 
-    // Fill table
     @FXML
     public void initialize() {
-        for (Appointment appointment : getAppointmentsStartingSoon()) {
-            if (getAppointmentsStartingSoon().isEmpty()) {
+        for (Appointment appointment : AppointmentDatabase.getInstance().getAppointmentsStartingSoon()) {
+            if (AppointmentDatabase.getInstance().getAppointmentsStartingSoon().isEmpty()) {
                 System.out.println("No alerts.");
                 break;
             }
             System.out.println(appointment);
         }
-        setTable(getAppointments());
+        setTable(AppointmentDatabase.getInstance().getAppointments());
     }
 
     private void setTable(ObservableList<Appointment> appointments) {
@@ -49,19 +50,27 @@ public class MainController {
     }
 
     public void allBtn() {
-        setTable(getAppointments());
+        setTable(AppointmentDatabase.getInstance().getAppointments());
     }
 
     public void weekBtn() {
-        setTable(getAppointmentsThisWeek());
+        setTable(AppointmentDatabase.getInstance().getAppointmentsThisWeek());
     }
 
     public void monthBtn() {
-        setTable(getAppointmentsThisMonth());
+        setTable(AppointmentDatabase.getInstance().getAppointmentsThisMonth());
     }
 
     public void newAppointmentBtn(ActionEvent event) throws IOException {
-        AnchorPane newAppointmentPane = FXMLLoader.load(getClass().getResource("NewAppointmentView.fxml"));
+        newWindow(event, "NewAppointmentView.fxml");
+    }
+
+    public void newCustomerBtn(ActionEvent event) throws IOException {
+        newWindow(event, "NewCustomerView.fxml");
+    }
+
+    private void newWindow(ActionEvent event, String viewFXML) throws IOException {
+        AnchorPane newAppointmentPane = FXMLLoader.load(getClass().getResource(viewFXML));
         Stage newAppointmentStage = new Stage();
         newAppointmentStage.initModality(Modality.WINDOW_MODAL);
         newAppointmentStage.initOwner(((Node)event.getSource()).getScene().getWindow());
