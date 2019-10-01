@@ -3,7 +3,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.City;
 import model.Customer;
-
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -27,14 +26,14 @@ public class CustomerDatabase {
 
         Statement statement = DatabaseConnection.getInstance().getConnection().createStatement();
         statement.executeUpdate("INSERT INTO address (address, address2, cityId, postalCode, phone, createDate, createdBy, lastUpdate, lastUpdateBy) VALUES ('"
-                + customer.getAddress() + "', " + nA + "', " + customer.getCity().getCityId() + "', " + customer.getCity().getPostalCode() + "', " + customer.getPhone()
-                + "', " + now + "', " + UserDatabase.getInstance().getUser() + "', " + now + "', " + UserDatabase.getInstance().getUser() + "'");
-        ResultSet results = GetData.getInstance().getDBResults("SELECT * FROM address WHERE address = '" + customer.getAddress() + "' AND cityId = '" + customer.getCity().getCityId());
+                + customer.getAddress() + "', '" + nA + "', '" + customer.getCity().getCityId() + "', '" + customer.getCity().getPostalCode() + "', '" + customer.getPhone()
+                + "', '" + now + "', '" + UserDatabase.getInstance().getUser() + "', '" + now + "', '" + UserDatabase.getInstance().getUser() + "')");
+        ResultSet results = GetData.getInstance().getDBResults("SELECT * FROM address WHERE address = '" + customer.getAddress() + "' AND cityId = '" + customer.getCity().getCityId() + "'");
         if (results.next())
             customer.setAddressId(results.getInt("addressId"));
-        statement.executeUpdate("INSERT INTO customer (customerName, addressId, active, createDate, createdBy, lastUpdate, lastUpdatedBy) VALUES ('"
-                + customer.getName() + "', " + customer.getAddressId() + "', " +  nA + "', " + now + "', " + UserDatabase.getInstance().getUser() + "', "
-                + now + "', " + UserDatabase.getInstance().getUser() + "'");
+        statement.executeUpdate("INSERT INTO customer (customerName, addressId, active, createDate, createdBy, lastUpdate, lastUpdateBy) VALUES ('"
+                + customer.getName() + "', '" + customer.getAddressId() + "', '" +  1 + "', '" + now + "', '" + UserDatabase.getInstance().getUser() + "', '"
+                + now + "', '" + UserDatabase.getInstance().getUser() + "')");
     }
 
     public void setCustomers() throws SQLException {
@@ -74,9 +73,15 @@ public class CustomerDatabase {
 
     public boolean customerExists(Customer customer) throws SQLException {
         ResultSet results = GetData.getInstance().getDBResults("SELECT * FROM customer WHERE customerName = '"
-                + customer.getName() + "' AND phone = '" + customer.getPhone());
-        if (results.next() == false)
-            return true;
+                + customer.getName() + "'");
+        while (results != null && results.next())
+            if (customers.get(results.getInt("customerId")).getPhone().equals(customer.getPhone()))
+                return true;
         return false;
+    }
+
+    public void refreshCustomers() throws SQLException {
+        customers.clear();
+        setCustomers();
     }
 }

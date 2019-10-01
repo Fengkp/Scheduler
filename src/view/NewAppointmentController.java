@@ -1,7 +1,12 @@
 package view;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -12,14 +17,13 @@ import model.Customer;
 import utils.AppointmentDatabase;
 import utils.CustomerDatabase;
 
+import java.io.IOException;
 import java.sql.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import static utils.AppointmentDatabase.*;
-import static utils.CustomerDatabase.*;
 
-public class NewAppointmentController {
+public class NewAppointmentController extends UniversalController {
     @FXML
     private TextField appointmentTypeTxt;
     @FXML
@@ -45,10 +49,10 @@ public class NewAppointmentController {
         endMinutesCombo.setItems(minutes);
         customerCombo.setItems(CustomerDatabase.getInstance().getCustomers());
 
-        test();
+        //test();
     }
 
-    public void confirmBtn() throws SQLException {
+    public void confirmBtn(ActionEvent event) throws IOException, SQLException {
         try {
             LocalDate date = appointmentDatePicker.getValue();
             String startHour = startHourCombo.getValue();
@@ -67,6 +71,8 @@ public class NewAppointmentController {
                 appointment.setCustomerName(customerCombo.getValue().getName());
 
                 AppointmentDatabase.getInstance().addAppointment(appointment);
+                AppointmentDatabase.getInstance().refreshAppointments();
+                cancelBtn(event);
             }
             // Add to DB, refresh arrays, display table again, close window
 //        newAppointment.setStartTime(startTimeTxt);
@@ -75,9 +81,8 @@ public class NewAppointmentController {
         }
     }
 
-    public void cancelBtn() {
-        Stage stage = (Stage) cancelBtn.getScene().getWindow();
-        stage.close();
+    public void cancelBtn(ActionEvent event) throws IOException {
+        newWindow(event, "MainView.fxml");
     }
 
     public boolean isValidAppointment(LocalDateTime start, LocalDateTime end) throws SQLException {
@@ -93,7 +98,6 @@ public class NewAppointmentController {
             System.out.println("This appointment overlaps an already existing appointment.");
             return false;
         }
-
         return true;
     }
 
@@ -116,12 +120,24 @@ public class NewAppointmentController {
         return true;
     }
 
-    private void test() {
-        appointmentDatePicker.setValue(LocalDate.of(2019, 10, 1));
-        startHourCombo.setValue("15");
-        startMinutesCombo.setValue("15");
-        endHourCombo.setValue("16");
-        endMinutesCombo.setValue("15");
-        appointmentTypeTxt.setText("Scrum");
+    public void editAppointment(Appointment appointment) {
+        appointmentDatePicker.setValue(appointment.getStartTime().toLocalDate());
+        startHourCombo.setValue(Integer.toString(appointment.getStartTime().getHour()));
+        startMinutesCombo.setValue(Integer.toString(appointment.getStartTime().getMinute()));
+        endHourCombo.setValue(Integer.toString(appointment.getEndTime().getHour()));
+        endMinutesCombo.setValue(Integer.toString(appointment.getEndTime().getMinute()));
+        appointmentTypeTxt.setText(appointment.getAppointmentType());
+//        customerCombo.getSelectionModel().select(CustomerDatabase.getInstance().getCustomers().get(appointment.getCustomerId()));
+//        customerCombo.setValue(CustomerDatabase.getInstance().getCustomers().get(appointment.getCustomerId()));
+
     }
+
+//    private void test() {
+//        appointmentDatePicker.setValue(LocalDate.of(2019, 10, 1));
+//        startHourCombo.setValue("15");
+//        startMinutesCombo.setValue("15");
+//        endHourCombo.setValue("16");
+//        endMinutesCombo.setValue("15");
+//        appointmentTypeTxt.setText("Scrum");
+//    }
 }

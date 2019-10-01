@@ -1,25 +1,22 @@
 package view;
-
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Appointment;
 import utils.AppointmentDatabase;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
-import static utils.AppointmentDatabase.*;
 
-public class MainController {
+public class MainController extends UniversalController{
     @FXML
     private TableView<Appointment> appointmentTable;
     @FXML
@@ -31,17 +28,19 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        for (Appointment appointment : AppointmentDatabase.getInstance().getAppointmentsStartingSoon()) {
-            if (AppointmentDatabase.getInstance().getAppointmentsStartingSoon().isEmpty()) {
-                System.out.println("No alerts.");
-                break;
-            }
-            System.out.println(appointment);
-        }
         setTable(AppointmentDatabase.getInstance().getAppointments());
+
+        appointmentTable.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    try {
+                        updateAppointment(newValue);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
-    private void setTable(ObservableList<Appointment> appointments) {
+    public void setTable(ObservableList<Appointment> appointments) {
         appointmentTypeColumn.setCellValueFactory(cellData -> cellData.getValue().appointmentTypeProperty());
         customerNameColumn.setCellValueFactory(cellData -> cellData.getValue().customerNameProperty());
         startTimeColumn.setCellValueFactory(cellData -> cellData.getValue().startTimeProperty());
@@ -69,14 +68,22 @@ public class MainController {
         newWindow(event, "NewCustomerView.fxml");
     }
 
-    private void newWindow(ActionEvent event, String viewFXML) throws IOException {
-        AnchorPane newAppointmentPane = FXMLLoader.load(getClass().getResource(viewFXML));
-        Stage newAppointmentStage = new Stage();
-        newAppointmentStage.initModality(Modality.WINDOW_MODAL);
-        newAppointmentStage.initOwner(((Node)event.getSource()).getScene().getWindow());
-        Scene newAppointmentScene = new Scene(newAppointmentPane);
-        newAppointmentStage.setScene(newAppointmentScene);
-        newAppointmentStage.showAndWait();
+    public void updateAppointment(Appointment appointment) throws IOException {
+
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("NewAppointmentView.fxml"));
+        Parent root = loader.load();
+
+        NewAppointmentController controller = loader.getController();
+        controller.editAppointment(appointment);
+
+
+        Scene scene = new Scene(root);
+        Stage window = (Stage) newAppointmentBtn.getScene().getWindow();
+        window.setTitle("Parking Garage");
+        window.setResizable(false);
+        window.setScene(scene);
+        window.show();
     }
 
 }

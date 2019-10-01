@@ -17,11 +17,13 @@ import java.time.LocalDate;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.scene.Node;
+import model.Appointment;
+
 import utils.AppointmentDatabase;
 import utils.CustomerDatabase;
 import utils.UserDatabase;
 
-public class LoginController implements Initializable {
+public class LoginController extends UniversalController implements Initializable {
     @FXML
     private TextField userNameText;
     @FXML
@@ -50,17 +52,10 @@ public class LoginController implements Initializable {
         password = passwordText.getText();
 
         if (UserDatabase.getInstance().authenticateUser(userName, password)) {
-            System.out.println("model.User Authenticated.");
-            CustomerDatabase.getInstance().setCustomers();
-            AppointmentDatabase.getInstance().setAppointments();
-            System.out.println(AppointmentDatabase.getInstance().getAppointmentsStartingSoon());
-            CustomerDatabase.getInstance().setCities();
+            System.out.println(UserDatabase.getInstance().getUser() + " authenticated.");
+            readyMainView();
 
-            Parent root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
-            Scene scene = new Scene(root);
-            Stage stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-            stage.show();
+            newWindow(event, "MainView.fxml");
         }
         else {
             System.out.println("Incorrect login information");
@@ -74,5 +69,19 @@ public class LoginController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void readyMainView() throws SQLException {
+        for (Appointment appointment : AppointmentDatabase.getInstance().getAppointmentsStartingSoon()) {
+            if (AppointmentDatabase.getInstance().getAppointmentsStartingSoon().isEmpty()) {
+                System.out.println("No alerts.");
+                break;
+            }
+            System.out.println(appointment);
+        }
+        CustomerDatabase.getInstance().setCustomers();
+        AppointmentDatabase.getInstance().setAppointments();
+        System.out.println(AppointmentDatabase.getInstance().getAppointmentsStartingSoon());
+        CustomerDatabase.getInstance().setCities();
     }
 }

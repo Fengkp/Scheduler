@@ -9,7 +9,6 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.NewCustomerController">
    <children>
       <GridPane prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -26,7 +25,7 @@
         </rowConstraints>
          <children>
             <Button fx:id="confirmBtn" mnemonicParsing="false" onAction="#confirmBtn" text="Confirm" GridPane.rowIndex="4" />
-            <Button fx:id="cancelBtn" mnemonicParsing="false" text="Cancel" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#cancelBtn" text="Cancel" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <Label text="Name" />
             <Label text="Address" GridPane.rowIndex="1" />
             <Label text="City" GridPane.rowIndex="2" />

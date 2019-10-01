@@ -51,7 +51,6 @@ public class AppointmentDatabase {
         return appointments;
     }
 
-    // Return ObservableList to display on calendar table
     public void setAppointments() throws SQLException {
         Month thisMonth = LocalDateTime.now().getMonth();
 
@@ -115,5 +114,12 @@ public class AppointmentDatabase {
         if (!results.next() == false)
             return true;
         return false;
+    }
+
+    public void refreshAppointments() throws SQLException {
+        appointments.clear();
+        appointmentsThisMonth.clear();
+        appointmentsThisWeek.clear();
+        setAppointments();
     }
 }
