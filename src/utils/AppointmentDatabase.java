@@ -41,7 +41,7 @@ public class AppointmentDatabase {
         Appointment appointment = new Appointment(results.getString("type"),
                 results.getTimestamp("start").toLocalDateTime(), results.getTimestamp("end").toLocalDateTime());
         appointment.setId(results.getInt("appointmentId"));
-        appointment.setId(results.getInt("customerId"));
+        appointment.setCustomerId(results.getInt("customerId"));
         appointment.setCustomerName(CustomerDatabase.getInstance().getCustomer(results.getInt("customerId")).getName());
 
         return appointment;
@@ -121,5 +121,19 @@ public class AppointmentDatabase {
         appointmentsThisMonth.clear();
         appointmentsThisWeek.clear();
         setAppointments();
+    }
+
+    public void updateAppointment(int appointmentToEdit, Appointment appointment) throws SQLException {
+        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+
+        Statement statement = DatabaseConnection.getInstance().getConnection().createStatement();
+        statement.executeUpdate("UPDATE appointment SET customerId = '" + appointment.getCustomerId() + "', type = '" + appointment.getAppointmentType() + "', start = '"
+                + appointment.getStartTime() + "', end = '" + appointment.getEndTime() + "', lastUpdate = '" + now + "', lastUpdateBy = '"
+                + UserDatabase.getInstance().getUser() + "' WHERE appointmentId = '" + appointmentToEdit + "'");
+    }
+
+    public void deleteAppointment(int appointmentToDelete) throws SQLException {
+        Statement statement = DatabaseConnection.getInstance().getConnection().createStatement();
+        statement.executeUpdate("DELETE FROM appointment WHERE appointmentId = '" + appointmentToDelete + "'");
     }
 }

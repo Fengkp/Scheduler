@@ -1,10 +1,8 @@
 package view;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -35,7 +33,7 @@ public class MainController extends UniversalController{
                     try {
                         updateAppointment(newValue);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        System.out.println("Nothing selected.");
                     }
                 });
     }
