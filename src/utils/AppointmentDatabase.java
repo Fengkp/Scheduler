@@ -39,7 +39,8 @@ public class AppointmentDatabase {
 
     private Appointment createAppointment(ResultSet results) throws SQLException{
         Appointment appointment = new Appointment(results.getString("type"),
-                results.getTimestamp("start").toLocalDateTime(), results.getTimestamp("end").toLocalDateTime());
+                GetData.getInstance().convertToLocal(results.getTimestamp("start").toLocalDateTime()),
+                GetData.getInstance().convertToLocal(results.getTimestamp("end").toLocalDateTime()));
         appointment.setId(results.getInt("appointmentId"));
         appointment.setCustomerId(results.getInt("customerId"));
         appointment.setCustomerName(CustomerDatabase.getInstance().getCustomer(results.getInt("customerId")).getName());
@@ -126,14 +127,17 @@ public class AppointmentDatabase {
     public void updateAppointment(int appointmentToEdit, Appointment appointment) throws SQLException {
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
 
-        Statement statement = DatabaseConnection.getInstance().getConnection().createStatement();
-        statement.executeUpdate("UPDATE appointment SET customerId = '" + appointment.getCustomerId() + "', type = '" + appointment.getAppointmentType() + "', start = '"
+        updateDB("UPDATE appointment SET customerId = '" + appointment.getCustomerId() + "', type = '" + appointment.getAppointmentType() + "', start = '"
                 + appointment.getStartTime() + "', end = '" + appointment.getEndTime() + "', lastUpdate = '" + now + "', lastUpdateBy = '"
                 + UserDatabase.getInstance().getUser() + "' WHERE appointmentId = '" + appointmentToEdit + "'");
     }
 
     public void deleteAppointment(int appointmentToDelete) throws SQLException {
+        updateDB("DELETE FROM appointment WHERE appointmentId = '" + appointmentToDelete + "'");
+    }
+
+    public void updateDB(String query) throws SQLException {
         Statement statement = DatabaseConnection.getInstance().getConnection().createStatement();
-        statement.executeUpdate("DELETE FROM appointment WHERE appointmentId = '" + appointmentToDelete + "'");
+        statement.executeUpdate(query);
     }
 }

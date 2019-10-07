@@ -17,7 +17,6 @@ public class UniversalController {
 
         Scene scene = new Scene(root);
         Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
-        window.setTitle("Parking Garage");
         window.setResizable(false);
         window.setScene(scene);
         window.show();

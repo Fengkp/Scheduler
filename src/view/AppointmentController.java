@@ -17,7 +17,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class NewAppointmentController extends UniversalController {
+public class AppointmentController extends UniversalController {
     @FXML
     private TextField appointmentTypeTxt;
     @FXML
@@ -29,10 +29,15 @@ public class NewAppointmentController extends UniversalController {
     @FXML
     private ComboBox<Customer> customerCombo;
 
-    private boolean isNewAppointment = true;
-    private Appointment appointment;
     public ObservableList<String> hours = FXCollections.observableArrayList();
     public ObservableList<String> minutes = FXCollections.observableArrayList();
+
+    // Variables used when editing appointment.
+    private boolean isNewAppointment = true;
+    private Appointment appointment;
+    private LocalDateTime initialStart;
+    private LocalDateTime initialEnd;
+    private int existingAppointmentId;
 
     @FXML
     public void initialize() {
@@ -45,7 +50,7 @@ public class NewAppointmentController extends UniversalController {
         endHourCombo.setItems(hours);
         endMinutesCombo.setItems(minutes);
         customerCombo.setItems(CustomerDatabase.getInstance().getCustomers());
-        //test();
+       // test();
     }
 
     public void confirmBtn(ActionEvent event) throws IOException, SQLException {
@@ -69,7 +74,7 @@ public class NewAppointmentController extends UniversalController {
                 if (isNewAppointment)
                     AppointmentDatabase.getInstance().addAppointment(appointment);
                 else
-                    AppointmentDatabase.getInstance().updateAppointment(appointment.getId(), appointment);
+                    AppointmentDatabase.getInstance().updateAppointment(existingAppointmentId, appointment);
 
                 AppointmentDatabase.getInstance().refreshAppointments();
                 cancelBtn(event);
@@ -80,20 +85,32 @@ public class NewAppointmentController extends UniversalController {
     }
 
 
-    public void cancelBtn(ActionEvent event) throws IOException {
+    public void cancelBtn(ActionEvent event) throws IOException, SQLException {
+        if (isNewAppointment == false)
+            AppointmentDatabase.getInstance().updateDB("UPDATE appointment SET start = '"
+                    + initialStart + "', end = '" + initialEnd + "' WHERE appointmentId = '"
+                    + existingAppointmentId + "'");
+
         newWindow(event, "MainView.fxml");
     }
 
     public void deleteBtn(ActionEvent event) throws SQLException, IOException {
-        AppointmentDatabase.getInstance().deleteAppointment(appointment.getId());
+        AppointmentDatabase.getInstance().deleteAppointment(existingAppointmentId);
         AppointmentDatabase.getInstance().refreshAppointments();
         cancelBtn(event);
     }
 
-    public void editAppointment(Appointment appointment) {
+    public void editAppointment(Appointment appointment) throws SQLException {
         deleteBtn.setVisible(true);
         isNewAppointment = false;
-        this.appointment = appointment;
+        existingAppointmentId = appointment.getId();
+        initialStart = appointment.getStartTime();
+        initialEnd = appointment.getEndTime();
+
+        AppointmentDatabase.getInstance().updateDB("UPDATE appointment SET start = '"
+                + LocalDateTime.of(1992, 8, 15, 0, 0) + "', end = '"
+                + LocalDateTime.of(1992, 8, 15, 0, 0) + "' WHERE appointmentId = '"
+                + appointment.getId() + "'");
 
         appointmentDatePicker.setValue(appointment.getStartTime().toLocalDate());
         startHourCombo.setValue(Integer.toString(appointment.getStartTime().getHour()));
@@ -109,7 +126,7 @@ public class NewAppointmentController extends UniversalController {
             System.out.println("EMPTY FIELDS");
             return false;
         }
-        if (!isValidDate(start, end)) {
+        if (!isValidDateTime(start, end)) {
             System.out.println("This appointment does not contain a valid date or time.");
             return false;
         }
@@ -120,7 +137,7 @@ public class NewAppointmentController extends UniversalController {
         return true;
     }
 
-    private boolean isValidDate(LocalDateTime start, LocalDateTime end) {
+    private boolean isValidDateTime(LocalDateTime start, LocalDateTime end) {
         int openHour = 9;
         int closeHour = 17;
         LocalDateTime now = LocalDateTime.now();
@@ -134,17 +151,17 @@ public class NewAppointmentController extends UniversalController {
             return false;
         if (start.getHour() < openHour || start.getHour() >= closeHour)
             return false;
-        if (end.getHour() <= openHour || end.getHour() > closeHour)
+        if (end.getHour() < openHour || end.getHour() > closeHour)
             return false;
         return true;
     }
 
-//    private void test() {
-//        appointmentDatePicker.setValue(LocalDate.of(2019, 10, 1));
-//        startHourCombo.setValue("15");
-//        startMinutesCombo.setValue("15");
-//        endHourCombo.setValue("16");
-//        endMinutesCombo.setValue("15");
-//        appointmentTypeTxt.setText("Scrum");
-//    }
+    private void test() {
+        appointmentDatePicker.setValue(LocalDate.of(2019, 10, 23));
+        startHourCombo.setValue("15");
+        startMinutesCombo.setValue("15");
+        endHourCombo.setValue("16");
+        endMinutesCombo.setValue("15");
+        appointmentTypeTxt.setText("Scrum");
+    }
 }

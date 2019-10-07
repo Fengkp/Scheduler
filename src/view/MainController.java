@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import model.Appointment;
 import utils.AppointmentDatabase;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class MainController extends UniversalController{
@@ -31,7 +32,13 @@ public class MainController extends UniversalController{
         appointmentTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     try {
-                        updateAppointment(newValue);
+                        if (newValue != null) {
+                            try {
+                                updateAppointment(newValue);
+                            } catch (SQLException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
                     } catch (IOException e) {
                         System.out.println("Nothing selected.");
                     }
@@ -59,26 +66,24 @@ public class MainController extends UniversalController{
     }
 
     public void newAppointmentBtn(ActionEvent event) throws IOException {
-        newWindow(event, "NewAppointmentView.fxml");
+        newWindow(event, "AppointmentView.fxml");
     }
 
     public void newCustomerBtn(ActionEvent event) throws IOException {
         newWindow(event, "NewCustomerView.fxml");
     }
 
-    public void updateAppointment(Appointment appointment) throws IOException {
+    public void updateAppointment(Appointment appointment) throws IOException, SQLException {
 
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("NewAppointmentView.fxml"));
+        loader.setLocation(getClass().getResource("AppointmentView.fxml"));
         Parent root = loader.load();
 
-        NewAppointmentController controller = loader.getController();
+        AppointmentController controller = loader.getController();
         controller.editAppointment(appointment);
-
 
         Scene scene = new Scene(root);
         Stage window = (Stage) newAppointmentBtn.getScene().getWindow();
-        window.setTitle("Parking Garage");
         window.setResizable(false);
         window.setScene(scene);
         window.show();
