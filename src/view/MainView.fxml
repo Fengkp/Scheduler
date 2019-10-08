@@ -25,8 +25,8 @@
             <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
                <children>
                   <Button fx:id="newAppointmentBtn" mnemonicParsing="false" onAction="#newAppointmentBtn" text="New Appointment" />
-                  <Button fx:id="newCustomerBtn" mnemonicParsing="false" onAction="#newCustomerBtn" text="New Customer" />
-                  <Button mnemonicParsing="false" text="Reports" />
+                  <Button fx:id="customerRecordsBtn" mnemonicParsing="false" onAction="#customerRecordsBtn" text="Customer Records" />
+                  <Button fx:id="reportsBtn" mnemonicParsing="false" onAction="#reportsBtn" text="Reports" />
                </children>
             </VBox>
          </left>

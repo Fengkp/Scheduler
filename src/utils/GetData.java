@@ -1,6 +1,11 @@
 package utils;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.*;
 import java.time.*;
+import java.util.List;
 
 public class GetData {
     private static GetData instance;
@@ -34,5 +39,28 @@ public class GetData {
             System.out.println("No results.");
         }
         return null;
+    }
+
+    public void updateDB(String query) throws SQLException {
+        Statement statement = DatabaseConnection.getInstance().getConnection().createStatement();
+        statement.executeUpdate(query);
+    }
+
+    public void outputToTxt(String destination, List<String> data) throws IOException {
+        File file = new File(destination);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsoluteFile(), true))) {
+            for (String string : data) {
+                writer.write(string);
+                writer.newLine();
+            }
+        }
+
+    }
+
+    public void deleteFile(String source) {
+        File file = new File(source);
+        if (file.exists())
+            file.delete();
     }
 }

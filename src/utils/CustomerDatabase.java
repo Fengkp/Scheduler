@@ -20,20 +20,31 @@ public class CustomerDatabase {
         return instance;
     }
 
-    public void addCustomer(Customer customer) throws SQLException {
+    public void addCustomer(Customer customer, int customerToEdit) throws SQLException {
+        int addressId = addressExists(customer);
+        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+
+        if (addressId == -1) {
+            addAddress(customer);
+            addressId = addressExists(customer);
+        }
+
+        if (customerToEdit != -1)
+            GetData.getInstance().updateDB("UPDATE customer SET customerName = '" + customer.getName() + "', addressId = '" + addressId + "', active = '"
+                    + 1 + "', lastUpdate = '" + now + "', lastUpdateBy = '" + UserDatabase.getInstance().getUser() + "' WHERE customerId = '" + customerToEdit + "'");
+        else
+            GetData.getInstance().updateDB("INSERT INTO customer (customerName, addressId, active, createDate, createdBy, lastUpdate, lastUpdateBy) VALUES ('"
+                    + customer.getName() + "', '" + addressId + "', '" +  1 + "', '" + now + "', '" + UserDatabase.getInstance().getUser() + "', '"
+                    + now + "', '" + UserDatabase.getInstance().getUser() + "')");
+    }
+
+    public void addAddress(Customer customer) throws SQLException {
         String nA = "N/A";
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
 
-        Statement statement = DatabaseConnection.getInstance().getConnection().createStatement();
-        statement.executeUpdate("INSERT INTO address (address, address2, cityId, postalCode, phone, createDate, createdBy, lastUpdate, lastUpdateBy) VALUES ('"
+        GetData.getInstance().updateDB("INSERT INTO address (address, address2, cityId, postalCode, phone, createDate, createdBy, lastUpdate, lastUpdateBy) VALUES ('"
                 + customer.getAddress() + "', '" + nA + "', '" + customer.getCity().getCityId() + "', '" + customer.getCity().getPostalCode() + "', '" + customer.getPhone()
                 + "', '" + now + "', '" + UserDatabase.getInstance().getUser() + "', '" + now + "', '" + UserDatabase.getInstance().getUser() + "')");
-        ResultSet results = GetData.getInstance().getDBResults("SELECT * FROM address WHERE address = '" + customer.getAddress() + "' AND cityId = '" + customer.getCity().getCityId() + "'");
-        if (results.next())
-            customer.setAddressId(results.getInt("addressId"));
-        statement.executeUpdate("INSERT INTO customer (customerName, addressId, active, createDate, createdBy, lastUpdate, lastUpdateBy) VALUES ('"
-                + customer.getName() + "', '" + customer.getAddressId() + "', '" +  1 + "', '" + now + "', '" + UserDatabase.getInstance().getUser() + "', '"
-                + now + "', '" + UserDatabase.getInstance().getUser() + "')");
     }
 
     public void setCustomers() throws SQLException {
@@ -80,8 +91,19 @@ public class CustomerDatabase {
         return false;
     }
 
+    public int addressExists(Customer customer) throws SQLException {
+        ResultSet results = GetData.getInstance().getDBResults("SELECT * FROM address WHERE address = '" + customer.getAddress() + "' AND cityId = '" + customer.getCity().getCityId() + "'");
+        if (results != null && results.next())
+            return results.getInt("addressId");
+        return -1;
+    }
+
     public void refreshCustomers() throws SQLException {
         customers.clear();
         setCustomers();
+    }
+
+    public void deleteCustomer(int customerToEdit) throws SQLException {
+        GetData.getInstance().updateDB("DELETE FROM customer WHERE customerId = '" + customerToEdit + "'");
     }
 }

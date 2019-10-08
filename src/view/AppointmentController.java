@@ -11,6 +11,7 @@ import model.Appointment;
 import model.Customer;
 import utils.AppointmentDatabase;
 import utils.CustomerDatabase;
+import utils.GetData;
 import java.io.IOException;
 import java.sql.*;
 import java.time.DayOfWeek;
@@ -50,7 +51,6 @@ public class AppointmentController extends UniversalController {
         endHourCombo.setItems(hours);
         endMinutesCombo.setItems(minutes);
         customerCombo.setItems(CustomerDatabase.getInstance().getCustomers());
-       // test();
     }
 
     public void confirmBtn(ActionEvent event) throws IOException, SQLException {
@@ -84,10 +84,9 @@ public class AppointmentController extends UniversalController {
         }
     }
 
-
     public void cancelBtn(ActionEvent event) throws IOException, SQLException {
         if (isNewAppointment == false)
-            AppointmentDatabase.getInstance().updateDB("UPDATE appointment SET start = '"
+            GetData.getInstance().updateDB("UPDATE appointment SET start = '"
                     + initialStart + "', end = '" + initialEnd + "' WHERE appointmentId = '"
                     + existingAppointmentId + "'");
 
@@ -107,7 +106,7 @@ public class AppointmentController extends UniversalController {
         initialStart = appointment.getStartTime();
         initialEnd = appointment.getEndTime();
 
-        AppointmentDatabase.getInstance().updateDB("UPDATE appointment SET start = '"
+        GetData.getInstance().updateDB("UPDATE appointment SET start = '"
                 + LocalDateTime.of(1992, 8, 15, 0, 0) + "', end = '"
                 + LocalDateTime.of(1992, 8, 15, 0, 0) + "' WHERE appointmentId = '"
                 + appointment.getId() + "'");
@@ -154,14 +153,5 @@ public class AppointmentController extends UniversalController {
         if (end.getHour() < openHour || end.getHour() > closeHour)
             return false;
         return true;
-    }
-
-    private void test() {
-        appointmentDatePicker.setValue(LocalDate.of(2019, 10, 23));
-        startHourCombo.setValue("15");
-        startMinutesCombo.setValue("15");
-        endHourCombo.setValue("16");
-        endMinutesCombo.setValue("15");
-        appointmentTypeTxt.setText("Scrum");
     }
 }

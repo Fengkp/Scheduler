@@ -94,12 +94,14 @@ public class AppointmentDatabase {
     }
 
     private void setAppointmentsThisWeek() throws SQLException{
-        LocalDateTime start = LocalDateTime.now(ZoneId.of(ZoneId.systemDefault().toString())).with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
+//        LocalDateTime start = LocalDateTime.now(ZoneId.of(ZoneId.systemDefault().toString())).with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
+        LocalDateTime start = LocalDateTime.now(ZoneId.of(ZoneId.systemDefault().toString())).with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
+//        start = start.plusWeeks(1);
         LocalDateTime end = start.plusDays(5);
 
         ResultSet results = GetData.getInstance().getDBResults("SELECT * FROM appointment WHERE start >= '" + start + "' AND start <= '" + end + "'");
 
-        while (results != null && results.next())
+        while (results.next())
             appointmentsThisWeek.add(createAppointment(results));
     }
 
@@ -127,17 +129,12 @@ public class AppointmentDatabase {
     public void updateAppointment(int appointmentToEdit, Appointment appointment) throws SQLException {
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
 
-        updateDB("UPDATE appointment SET customerId = '" + appointment.getCustomerId() + "', type = '" + appointment.getAppointmentType() + "', start = '"
+        GetData.getInstance().updateDB("UPDATE appointment SET customerId = '" + appointment.getCustomerId() + "', type = '" + appointment.getAppointmentType() + "', start = '"
                 + appointment.getStartTime() + "', end = '" + appointment.getEndTime() + "', lastUpdate = '" + now + "', lastUpdateBy = '"
                 + UserDatabase.getInstance().getUser() + "' WHERE appointmentId = '" + appointmentToEdit + "'");
     }
 
     public void deleteAppointment(int appointmentToDelete) throws SQLException {
-        updateDB("DELETE FROM appointment WHERE appointmentId = '" + appointmentToDelete + "'");
-    }
-
-    public void updateDB(String query) throws SQLException {
-        Statement statement = DatabaseConnection.getInstance().getConnection().createStatement();
-        statement.executeUpdate(query);
+        GetData.getInstance().updateDB("DELETE FROM appointment WHERE appointmentId = '" + appointmentToDelete + "'");
     }
 }

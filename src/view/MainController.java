@@ -11,6 +11,8 @@ import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import model.Appointment;
 import utils.AppointmentDatabase;
+import utils.GetData;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -23,12 +25,11 @@ public class MainController extends UniversalController{
     @FXML
     private TableColumn<Appointment, LocalDateTime> startTimeColumn, endTimeColumn;
     @FXML
-    private Button allBtn, weekBtn, monthBtn, newAppointmentBtn, newCustomerBtn;
+    private Button allBtn, weekBtn, monthBtn, newAppointmentBtn, customerRecordsBtn, reportsBtn;
 
     @FXML
-    public void initialize() {
+    public void initialize() throws IOException {
         setTable(AppointmentDatabase.getInstance().getAppointments());
-
         appointmentTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     try {
@@ -69,8 +70,11 @@ public class MainController extends UniversalController{
         newWindow(event, "AppointmentView.fxml");
     }
 
-    public void newCustomerBtn(ActionEvent event) throws IOException {
+    public void customerRecordsBtn(ActionEvent event) throws IOException {
         newWindow(event, "NewCustomerView.fxml");
+    }
+    public void reportsBtn(ActionEvent event) throws IOException {
+        newWindow(event, "ReportsView.fxml");
     }
 
     public void updateAppointment(Appointment appointment) throws IOException, SQLException {
@@ -88,5 +92,4 @@ public class MainController extends UniversalController{
         window.setScene(scene);
         window.show();
     }
-
 }
