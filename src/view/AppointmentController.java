@@ -80,7 +80,7 @@ public class AppointmentController extends UniversalController {
                 cancelBtn(event);
             }
         } catch (NullPointerException | NumberFormatException ex) {
-            System.out.println("EMPTY FIELDS");
+            errorBox("EMPTY FIELDS", "Date and time fields contain empty values.");
         }
     }
 
@@ -90,7 +90,7 @@ public class AppointmentController extends UniversalController {
                     + initialStart + "', end = '" + initialEnd + "' WHERE appointmentId = '"
                     + existingAppointmentId + "'");
 
-        newWindow(event, "MainView.fxml");
+        newWindow(event, "MainView.fxml", "Appointments");
     }
 
     public void deleteBtn(ActionEvent event) throws SQLException, IOException {
@@ -121,24 +121,28 @@ public class AppointmentController extends UniversalController {
     }
 
     private boolean isValidAppointment(LocalDateTime start, LocalDateTime end) throws SQLException {
+        int openHour = 9;
+        int closeHour = 17;
+
         if (appointmentTypeTxt.getText().trim().isEmpty() || customerCombo.getValue() == null) {
-            System.out.println("EMPTY FIELDS");
+            errorBox("EMPTY FIELDS", "Appointment type and/or Customer fields contain empty values.");
             return false;
         }
-        if (!isValidDateTime(start, end)) {
-            System.out.println("This appointment does not contain a valid date or time.");
+        if (!isValidDateTime(start, end, openHour, closeHour)) {
+            errorBox("OUTSIDE BUSINESS HOURS", "This appointment falls outside usual business hours."
+                    + "\nBusiness hours: \nMonday - Friday \n" + openHour + " - " + closeHour);
             return false;
         }
         if (AppointmentDatabase.getInstance().isAppointmentTimeOverlapping(start, end)) {
-            System.out.println("This appointment overlaps an already existing appointment.");
+            errorBox("APPOINTMENT OVERLAPS", "This appointment overlaps an already existing appointment. "
+                    + "\nPlease choose a different date or time.");
             return false;
         }
         return true;
     }
 
-    private boolean isValidDateTime(LocalDateTime start, LocalDateTime end) {
-        int openHour = 9;
-        int closeHour = 17;
+    private boolean isValidDateTime(LocalDateTime start, LocalDateTime end, int openHour, int closeHour) {
+
         LocalDateTime now = LocalDateTime.now();
 
         if (start.isBefore(now) || end.isBefore(now))

@@ -11,7 +11,7 @@ import utils.CustomerDatabase;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class NewCustomerController extends UniversalController {
+public class CustomerRecordsController extends UniversalController {
     @FXML
     private TextField nameTxt, addressTxt, phoneTxt;
     @FXML
@@ -46,7 +46,12 @@ public class NewCustomerController extends UniversalController {
     public void confirmBtn(ActionEvent event) throws IOException, SQLException {
         Customer customer = new Customer(nameTxt.getText(), addressTxt.getText(), cityCombo.getValue(), phoneTxt.getText());
 
-        if (isValidCustomer(customer)) {
+        if (nameTxt.getText().trim().isEmpty() || addressTxt.getText().trim().isEmpty()
+                || phoneTxt.getText().trim().isEmpty() || cityCombo.getValue() == null) {
+            errorBox("EMPTY FIELDS", "Customer fields contain empty values.");
+            throw new NullPointerException("Empty fields.");
+        }
+        else if (isValidCustomer(customer)) {
             if (editCustomer)
                 CustomerDatabase.getInstance().addCustomer(customer, selectedCustomer.getId());
             else
@@ -60,15 +65,10 @@ public class NewCustomerController extends UniversalController {
     }
 
     public void cancelBtn(ActionEvent event) throws IOException {
-        newWindow(event, "MainView.fxml");
+        newWindow(event, "MainView.fxml", "Appointments");
     }
 
     private boolean isValidCustomer(Customer customer) throws SQLException {
-        if (nameTxt.getText().trim().isEmpty() || addressTxt.getText().trim().isEmpty()
-                || phoneTxt.getText().trim().isEmpty() || cityCombo.getValue() == null) {
-            System.out.println("EMPTY FIELDS");
-            return false;
-        }
         if (CustomerDatabase.getInstance().customerExists(customer) && !editCustomer) {
             System.out.println("Customer already exists.");
             return false;

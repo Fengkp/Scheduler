@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
@@ -8,15 +9,16 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.AppointmentController">
    <children>
       <GridPane prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
+          <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
         </columnConstraints>
         <rowConstraints>
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -27,21 +29,60 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Label text="Date" />
-            <Label text="End" GridPane.rowIndex="2" />
-            <Label text="Customer" GridPane.rowIndex="4" />
-            <Button fx:id="confirmBtn" mnemonicParsing="false" onAction="#confirmBtn" text="Confirm" GridPane.rowIndex="5" />
-            <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#cancelBtn" text="Cancel" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            <Label text="Start" GridPane.rowIndex="1" />
-            <Label text="Appointment Type" GridPane.rowIndex="3" />
+            <Label text="Date:">
+               <GridPane.margin>
+                  <Insets left="150.0" />
+               </GridPane.margin></Label>
+            <Label text="End:" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets left="150.0" />
+               </GridPane.margin></Label>
+            <Label text="Customer:" GridPane.rowIndex="4">
+               <GridPane.margin>
+                  <Insets left="130.0" />
+               </GridPane.margin></Label>
+            <Button fx:id="confirmBtn" mnemonicParsing="false" onAction="#confirmBtn" prefHeight="10.0" prefWidth="60.0" text="Confirm" GridPane.rowIndex="5">
+               <GridPane.margin>
+                  <Insets left="100.0" />
+               </GridPane.margin></Button>
+            <Label text="Start:" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets left="150.0" />
+               </GridPane.margin></Label>
+            <Label text="Appointment Type:" GridPane.rowIndex="3">
+               <GridPane.margin>
+                  <Insets left="80.0" />
+               </GridPane.margin></Label>
             <TextField fx:id="appointmentTypeTxt" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <DatePicker fx:id="appointmentDatePicker" GridPane.columnIndex="1" />
-            <ComboBox fx:id="startHourCombo" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <ComboBox fx:id="startMinutesCombo" prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <ComboBox fx:id="endHourCombo" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <ComboBox fx:id="endMinutesCombo" prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <ComboBox fx:id="customerCombo" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#deleteBtn" text="Delete" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+            <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <children>
+                  <ComboBox fx:id="startHourCombo" prefWidth="50.0" />
+                  <ComboBox fx:id="startMinutesCombo" prefWidth="50.0" />
+               </children>
+               <padding>
+                  <Insets top="23.0" />
+               </padding>
+            </HBox>
+            <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <children>
+                  <ComboBox fx:id="endHourCombo" prefWidth="50.0" />
+                  <ComboBox fx:id="endMinutesCombo" prefWidth="50.0" />
+               </children>
+               <padding>
+                  <Insets top="23.0" />
+               </padding>
+            </HBox>
+            <HBox prefHeight="100.0" prefWidth="200.0" spacing="40.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+               <children>
+                  <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#cancelBtn" prefHeight="10.0" prefWidth="60.0" text="Cancel" />
+                  <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#deleteBtn" prefHeight="10.0" prefWidth="60.0" text="Delete" />
+               </children>
+               <padding>
+                  <Insets top="20.0" />
+               </padding>
+            </HBox>
          </children>
       </GridPane>
    </children>

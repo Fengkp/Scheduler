@@ -1,24 +1,18 @@
 package view;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import javafx.scene.Node;
 import model.Appointment;
-
 import utils.AppointmentDatabase;
 import utils.CustomerDatabase;
 import utils.UserDatabase;
@@ -54,21 +48,12 @@ public class LoginController extends UniversalController implements Initializabl
         if (UserDatabase.getInstance().authenticateUser(userName, password)) {
             System.out.println(UserDatabase.getInstance().getUser() + " authenticated.");
             readyMainView();
-
-            newWindow(event, "MainView.fxml");
+            newWindow(event, "MainView.fxml", "Appointments");
         }
         else {
             System.out.println("Incorrect login information");
             errorBox(languageRB.getString("loginErrorTitle"), languageRB.getString("loginError"));
         }
-    }
-
-    public void errorBox(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
     private void readyMainView() throws SQLException {
@@ -82,6 +67,24 @@ public class LoginController extends UniversalController implements Initializabl
         CustomerDatabase.getInstance().setCustomers();
         AppointmentDatabase.getInstance().setAppointments();
         System.out.println(AppointmentDatabase.getInstance().getAppointmentsStartingSoon());
+        if (!AppointmentDatabase.getInstance().getAppointmentsStartingSoon().isEmpty())
+            appointmentsStartingSoon();
         CustomerDatabase.getInstance().setCities();
+    }
+
+    private void appointmentsStartingSoon() {
+        StringBuilder appointmentsStartingSoon = new StringBuilder();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        DateTimeFormatter startTime = DateTimeFormatter.ofPattern("HH:mm");
+
+        alert.setTitle("APPOINTMENT ALERT");
+        alert.setHeaderText("Appointments starting soon:");
+
+        for (Appointment appointment : AppointmentDatabase.getInstance().getAppointmentsStartingSoon())
+            appointmentsStartingSoon.append(appointment.getAppointmentType() + " starting within 15 minutes at "
+                    + startTime.format(appointment.getStartTime()) + ".\n");
+        alert.setContentText(appointmentsStartingSoon.toString());
+
+        alert.showAndWait();
     }
 }

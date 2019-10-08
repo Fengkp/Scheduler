@@ -93,10 +93,8 @@ public class AppointmentDatabase {
         return appointmentsThisWeek;
     }
 
-    private void setAppointmentsThisWeek() throws SQLException{
-//        LocalDateTime start = LocalDateTime.now(ZoneId.of(ZoneId.systemDefault().toString())).with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
+    private void setAppointmentsThisWeek() throws SQLException {
         LocalDateTime start = LocalDateTime.now(ZoneId.of(ZoneId.systemDefault().toString())).with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
-//        start = start.plusWeeks(1);
         LocalDateTime end = start.plusDays(5);
 
         ResultSet results = GetData.getInstance().getDBResults("SELECT * FROM appointment WHERE start >= '" + start + "' AND start <= '" + end + "'");
@@ -111,6 +109,8 @@ public class AppointmentDatabase {
 
     public boolean isAppointmentTimeOverlapping(LocalDateTime start, LocalDateTime end) throws SQLException {
         ResultSet results = GetData.getInstance().getDBResults("SELECT * FROM appointment WHERE start <= '" + end + "' AND end >='" + end + "'");
+        if (!results.next() == false)
+            return true;
         if (!results.next() == false)
             return true;
         results = GetData.getInstance().getDBResults("SELECT * FROM appointment WHERE start <= '" + start + "' AND end >='" + start + "'");

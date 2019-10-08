@@ -11,8 +11,6 @@ import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import model.Appointment;
 import utils.AppointmentDatabase;
-import utils.GetData;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -28,10 +26,10 @@ public class MainController extends UniversalController{
     private Button allBtn, weekBtn, monthBtn, newAppointmentBtn, customerRecordsBtn, reportsBtn;
 
     @FXML
-    public void initialize() throws IOException {
+    public void initialize() {
         setTable(AppointmentDatabase.getInstance().getAppointments());
-        appointmentTable.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
+        appointmentTable.getSelectionModel().selectedItemProperty().addListener(        // This is the only time within this file that I'll use a listener.
+                (observable, oldValue, newValue) -> {                                   // No need to create a separate method for it.
                     try {
                         if (newValue != null) {
                             try {
@@ -67,18 +65,17 @@ public class MainController extends UniversalController{
     }
 
     public void newAppointmentBtn(ActionEvent event) throws IOException {
-        newWindow(event, "AppointmentView.fxml");
+        newWindow(event, "AppointmentView.fxml", "Create Appointment");
     }
 
     public void customerRecordsBtn(ActionEvent event) throws IOException {
-        newWindow(event, "NewCustomerView.fxml");
+        newWindow(event, "CustomerRecordsView.fxml", "Create or Edit Customers");
     }
     public void reportsBtn(ActionEvent event) throws IOException {
-        newWindow(event, "ReportsView.fxml");
+        newWindow(event, "ReportsView.fxml", "Reports");
     }
 
     public void updateAppointment(Appointment appointment) throws IOException, SQLException {
-
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("AppointmentView.fxml"));
         Parent root = loader.load();
@@ -89,6 +86,7 @@ public class MainController extends UniversalController{
         Scene scene = new Scene(root);
         Stage window = (Stage) newAppointmentBtn.getScene().getWindow();
         window.setResizable(false);
+        window.setTitle("Edit Appointment");
         window.setScene(scene);
         window.show();
     }

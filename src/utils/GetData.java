@@ -55,7 +55,6 @@ public class GetData {
                 writer.newLine();
             }
         }
-
     }
 
     public void deleteFile(String source) {

@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.ReportsController">
    <children>
-      <VBox alignment="CENTER" layoutX="307.0" layoutY="111.0" prefHeight="400.0" prefWidth="600.0" spacing="50.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox alignment="CENTER" layoutX="307.0" layoutY="111.0" prefHeight="400.0" prefWidth="600.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Button fx:id="appointmentTypesBtn" mnemonicParsing="false" onAction="#appointmentTypesBtn" text="Appointment Types by Month" />
-            <Button mnemonicParsing="false" onAction="#schedulesBtn" text="Schedules" />
-            <Button mnemonicParsing="false" text="Button" />
-            <Button fx:id="goBackBtn" layoutX="284.0" layoutY="235.0" mnemonicParsing="false" onAction="#goBackBtn" text="Go Back" />
+            <Button fx:id="appointmentTypesBtn" mnemonicParsing="false" onAction="#appointmentTypesBtn" prefHeight="50.0" prefWidth="150.0" text="Appointment Types by Month" textAlignment="CENTER" wrapText="true" />
+            <Button mnemonicParsing="false" onAction="#schedulesBtn" prefHeight="50.0" prefWidth="150.0" text="Schedules" textAlignment="CENTER" wrapText="true" />
+            <Button fx:id="contactInfoBtn" mnemonicParsing="false" onAction="#contactInfoBtn" prefHeight="50.0" prefWidth="150.0" text="Customer Contact Numbers" textAlignment="CENTER" wrapText="true" />
+            <Label text="Note: Reports will be sent to 'reports' directory as .txt files." />
+            <Button fx:id="goBackBtn" layoutX="284.0" layoutY="235.0" mnemonicParsing="false" onAction="#goBackBtn" text="Go Back">
+               <VBox.margin>
+                  <Insets top="25.0" />
+               </VBox.margin></Button>
          </children>
       </VBox>
    </children>
