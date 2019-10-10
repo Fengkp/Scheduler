@@ -94,7 +94,7 @@ public class AppointmentDatabase {
     }
 
     private void setAppointmentsThisWeek() throws SQLException {
-        LocalDateTime start = LocalDateTime.now(ZoneId.of(ZoneId.systemDefault().toString())).with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
+        LocalDateTime start = LocalDateTime.now(ZoneId.of(ZoneId.systemDefault().toString())).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDateTime end = start.plusDays(5);
 
         ResultSet results = GetData.getInstance().getDBResults("SELECT * FROM appointment WHERE start >= '" + start + "' AND start <= '" + end + "'");

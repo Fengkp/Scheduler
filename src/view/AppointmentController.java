@@ -39,6 +39,8 @@ public class AppointmentController extends UniversalController {
     private LocalDateTime initialStart;
     private LocalDateTime initialEnd;
     private int existingAppointmentId;
+    private final int openHour = 9;
+    private final int closeHour = 17;
 
     @FXML
     public void initialize() {
@@ -50,6 +52,8 @@ public class AppointmentController extends UniversalController {
         startMinutesCombo.setItems(minutes);
         endHourCombo.setItems(hours);
         endMinutesCombo.setItems(minutes);
+        startHourCombo.setValue(String.format("%02d", openHour));
+        endHourCombo.setValue(String.format("%02d", openHour));
         customerCombo.setItems(CustomerDatabase.getInstance().getCustomers());
     }
 
@@ -121,9 +125,6 @@ public class AppointmentController extends UniversalController {
     }
 
     private boolean isValidAppointment(LocalDateTime start, LocalDateTime end) throws SQLException {
-        int openHour = 9;
-        int closeHour = 17;
-
         if (appointmentTypeTxt.getText().trim().isEmpty() || customerCombo.getValue() == null) {
             errorBox("EMPTY FIELDS", "Appointment type and/or Customer fields contain empty values.");
             return false;

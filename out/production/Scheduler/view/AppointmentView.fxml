@@ -58,8 +58,8 @@
             <ComboBox fx:id="customerCombo" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <children>
-                  <ComboBox fx:id="startHourCombo" prefWidth="50.0" />
-                  <ComboBox fx:id="startMinutesCombo" prefWidth="50.0" />
+                  <ComboBox fx:id="startHourCombo" prefWidth="60.0" />
+                  <ComboBox fx:id="startMinutesCombo" prefWidth="60.0" />
                </children>
                <padding>
                   <Insets top="23.0" />
@@ -67,8 +67,8 @@
             </HBox>
             <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <children>
-                  <ComboBox fx:id="endHourCombo" prefWidth="50.0" />
-                  <ComboBox fx:id="endMinutesCombo" prefWidth="50.0" />
+                  <ComboBox fx:id="endHourCombo" prefWidth="60.0" />
+                  <ComboBox fx:id="endMinutesCombo" prefWidth="60.0" />
                </children>
                <padding>
                   <Insets top="23.0" />

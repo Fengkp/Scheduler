@@ -8,7 +8,7 @@ public class DatabaseConnection {
     private static DatabaseConnection instance;
     private static Connection connection = null;
 
-    private final String DB_URL = "jdbc:mysql://52.206.157.109/U06mzl";
+    private final String DB_URL = "jdbc:mysql://3.227.166.251/U06mzl";
     private final String DBUSER = "U06mzl";
     private final String DBPASS = "53688811361";
 
