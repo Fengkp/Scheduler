@@ -7,12 +7,24 @@ import utils.DatabaseConnection;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        System.out.println(Timestamp.valueOf(LocalDateTime.now()));
+        ZonedDateTime time1 = LocalDateTime.now().atZone(ZoneId.systemDefault());
+        System.out.println(time1);
+        ZonedDateTime time2 = time1.withZoneSameInstant(ZoneId.of("UTC"));
+        System.out.println(time2);
+
+        ZonedDateTime time3 = time2.toLocalDateTime().atZone(ZoneId.of("UTC"));
+        System.out.println(time3);
+        ZonedDateTime time4 = time3.withZoneSameInstant(ZoneId.systemDefault());
+        System.out.println(time4);
+
+
         DatabaseConnection.getInstance().connect();
         try {
             Parent root = FXMLLoader.load(getClass().getResource("view/LoginView.fxml"));

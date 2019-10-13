@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.*;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class GetData {
@@ -18,15 +19,23 @@ public class GetData {
         return instance;
     }
 
-    public LocalDateTime convertToLocal(LocalDateTime time) {
-        ZonedDateTime timeZDT = time.atZone(ZoneId.of(ZoneId.systemDefault().toString()));
-        ZonedDateTime timeUTC = timeZDT.withZoneSameInstant(ZoneId.of("UTC"));
-        return timeUTC.toLocalDateTime();
+    public LocalDateTime convertToLocal(Timestamp time) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+        LocalDateTime time0 = LocalDateTime.parse(time.toString(), formatter);
+        ZonedDateTime time1 = time0.atZone(ZoneId.systemDefault());
+        //ZonedDateTime time2 = time1.withZoneSameInstant(ZoneId.systemDefault());
+        return time1.toLocalDateTime();
+//        ZonedDateTime timeZDT = time.atZone(ZoneId.of(ZoneId.systemDefault().toString()));
+//        ZonedDateTime timeUTC = timeZDT.withZoneSameInstant(ZoneId.of("UTC"));
+//        return timeUTC.toLocalDateTime();
     }
 
     public LocalDateTime convertToUTC(LocalDateTime time) {
-        ZonedDateTime timeUTC = time.atZone(ZoneId.of("UTC"));
-        return timeUTC.toLocalDateTime();
+        ZonedDateTime time1 = time.atZone(ZoneId.systemDefault());
+        ZonedDateTime time2 = time1.withZoneSameInstant(ZoneId.of("UTC"));
+        return time2.toLocalDateTime();
+//        ZonedDateTime timeUTC = time.atZone(ZoneId.of("UTC"));
+//        return timeUTC.toLocalDateTime();
     }
 
     public ResultSet getDBResults(String query) {

@@ -26,7 +26,8 @@ public class AppointmentDatabase {
 
     public void addAppointment(Appointment appointment) throws SQLException {
         String nA = "N/A";
-        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+//        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
 
         Statement statement = DatabaseConnection.getInstance().getConnection().createStatement();
         statement.executeUpdate("INSERT INTO appointment (userId, customerId, title, description, location, contact, url, createDate, " +
@@ -34,13 +35,14 @@ public class AppointmentDatabase {
                 + UserDatabase.getInstance().getUser().getId() + "', '" + appointment.getCustomerId()
                 + "', '" + nA + "', '" + nA + "', '" + nA + "', '" + nA  + "', '" + nA + "', '" + now + "', '"
                 + UserDatabase.getInstance().getUser().getName() + "', '" + UserDatabase.getInstance().getUser().getName()
-                + "', '" + appointment.getAppointmentType() + "', '" + appointment.getStartTime() + "', '" + appointment.getEndTime() + "')");
+                + "', '" + appointment.getAppointmentType() + "', '" + GetData.getInstance().convertToUTC(appointment.getStartTime())
+                + "', '" + GetData.getInstance().convertToUTC(appointment.getEndTime()) + "')");
     }
 
     private Appointment createAppointment(ResultSet results) throws SQLException{
         Appointment appointment = new Appointment(results.getString("type"),
-                GetData.getInstance().convertToLocal(results.getTimestamp("start").toLocalDateTime()),
-                GetData.getInstance().convertToLocal(results.getTimestamp("end").toLocalDateTime()));
+                GetData.getInstance().convertToLocal(results.getTimestamp("start")),
+                GetData.getInstance().convertToLocal(results.getTimestamp("end")));
         appointment.setId(results.getInt("appointmentId"));
         appointment.setCustomerId(results.getInt("customerId"));
         appointment.setCustomerName(CustomerDatabase.getInstance().getCustomer(results.getInt("customerId")).getName());
@@ -83,8 +85,8 @@ public class AppointmentDatabase {
 
         while (results.next()) {
             Appointment appointment = new Appointment(results.getString("type"),
-                    GetData.getInstance().convertToLocal(results.getTimestamp("start").toLocalDateTime()),
-                    GetData.getInstance().convertToLocal(results.getTimestamp("end").toLocalDateTime()));
+                    GetData.getInstance().convertToLocal(results.getTimestamp("start")),
+                    GetData.getInstance().convertToLocal(results.getTimestamp("end")));
             appointmentsStartingSoon.add(appointment);
         }
     }
